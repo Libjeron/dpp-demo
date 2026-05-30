@@ -1,0 +1,1519 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ürün Pasaportu — DPP</title>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,9..144,300;0,9..144,600;1,9..144,300&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/6.7.0/ethers.umd.min.js"></script>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<style>
+:root {
+  --eu-navy:    #003399;
+  --eu-navy2:   #002580;
+  --eu-yellow:  #FFCC00;
+  --eu-yellow2: #E6B800;
+  --eu-bg:      #F4F6FB;
+  --eu-surface: #ffffff;
+  --eu-border:  #D0D8EE;
+  --eu-border2: #B8C4E0;
+  --eu-text:    #0D1B3E;
+  --eu-muted:   #5A6A8A;
+  --eu-muted2:  #8896B0;
+  --eu-green:   #1A7A4A;
+  --eu-green-bg:#E8F5EF;
+  --eu-red:     #C0392B;
+  --eu-red-bg:  #FDECEA;
+  --eu-info-bg: #EBF0FF;
+  --sans:  'DM Sans', sans-serif;
+  --serif: 'Source Serif 4', serif;
+}
+
+* { margin:0; padding:0; box-sizing:border-box; }
+
+body {
+  font-family: var(--sans);
+  background: var(--eu-bg);
+  color: var(--eu-text);
+  min-height: 100vh;
+  font-size: 14px;
+  display: flex;
+  flex-direction: column;
+}
+
+body::before {
+  content: '';
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  height: 4px;
+  background: var(--eu-yellow);
+  z-index: 200;
+}
+
+/* ── HEADER ── */
+header {
+  background: var(--eu-navy);
+  position: sticky;
+  top: 4px;
+  z-index: 100;
+  box-shadow: 0 2px 12px rgba(0,51,153,0.3);
+}
+
+.header-top {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0 32px;
+  height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.brand-name {
+  font-family: var(--serif);
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: white;
+}
+
+.header-right { display: flex; align-items: center; gap: 10px; }
+
+.btn-back {
+  font-size: 0.78rem;
+  color: white;
+  background: rgba(255,255,255,0.1);
+  border: 1px solid rgba(255,255,255,0.2);
+  padding: 7px 14px;
+  border-radius: 2px;
+  cursor: pointer;
+  font-family: var(--sans);
+  transition: background 0.15s;
+  display: none;
+}
+
+.btn-back:hover { background: rgba(255,255,255,0.18); }
+.btn-back.show { display: block; }
+
+/* ── SEARCH SCREEN ── */
+#search-screen {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 24px;
+}
+
+#search-screen.hidden { display: none; }
+
+.search-wrap {
+  width: 100%;
+  max-width: 520px;
+  text-align: center;
+}
+
+.search-title {
+  font-family: var(--serif);
+  font-size: 2rem;
+  font-weight: 600;
+  color: var(--eu-navy);
+  margin-bottom: 8px;
+  letter-spacing: -0.02em;
+}
+
+.search-sub {
+  font-size: 0.88rem;
+  color: var(--eu-muted);
+  margin-bottom: 36px;
+  font-weight: 300;
+  line-height: 1.6;
+}
+
+.search-box {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+
+.search-input {
+  flex: 1;
+  padding: 11px 16px;
+  background: var(--eu-surface);
+  border: 1px solid var(--eu-border2);
+  border-radius: 4px;
+  font-family: monospace;
+  font-size: 0.9rem;
+  color: var(--eu-text);
+  outline: none;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.search-input:focus {
+  border-color: var(--eu-navy);
+  box-shadow: 0 0 0 3px rgba(0,51,153,0.1);
+}
+
+.search-input::placeholder { color: var(--eu-muted2); font-family: var(--sans); }
+
+.btn-primary {
+  padding: 11px 22px;
+  background: var(--eu-navy);
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-family: var(--sans);
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s;
+  white-space: nowrap;
+}
+
+.btn-primary:hover { background: var(--eu-navy2); }
+
+.search-hint {
+  font-size: 0.75rem;
+  color: var(--eu-muted2);
+  line-height: 1.6;
+}
+
+#search-error {
+  margin-top: 12px;
+  padding: 10px 14px;
+  background: var(--eu-red-bg);
+  color: var(--eu-red);
+  border: 1px solid rgba(192,57,43,0.2);
+  border-radius: 4px;
+  font-size: 0.82rem;
+  display: none;
+}
+
+/* ── PASSPORT SCREEN ── */
+#passport-screen {
+  display: none;
+  flex: 1;
+}
+
+#passport-screen.active { display: block; }
+
+/* ── PASSPORT HERO ── */
+.passport-hero {
+  background: var(--eu-navy);
+  padding: 28px 32px 36px;
+}
+
+.hero-inner {
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.hero-meta {
+  font-size: 0.7rem;
+  color: rgba(255,255,255,0.45);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-bottom: 14px;
+  font-weight: 500;
+}
+
+.hero-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 14px;
+}
+
+.hbadge {
+  font-size: 0.65rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 4px 10px;
+  border-radius: 2px;
+}
+
+.hbadge-yellow { background: rgba(255,204,0,0.18); color: var(--eu-yellow); border: 1px solid rgba(255,204,0,0.3); }
+.hbadge-white  { background: rgba(255,255,255,0.08); color: rgba(255,255,255,0.65); border: 1px solid rgba(255,255,255,0.15); }
+
+.hero-name {
+  font-family: var(--serif);
+  font-size: 2.2rem;
+  font-weight: 600;
+  color: white;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  margin-bottom: 6px;
+}
+
+.hero-brand {
+  font-size: 0.9rem;
+  color: rgba(255,255,255,0.5);
+  font-weight: 300;
+  margin-bottom: 18px;
+}
+
+.integrity-strip {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 16px;
+  border-radius: 4px;
+  font-size: 0.82rem;
+  font-weight: 500;
+}
+
+.integrity-strip.valid {
+  background: #E8F5EF;
+  border: 1px solid rgba(26,122,74,0.4);
+  color: #1A7A4A;
+}
+
+.integrity-strip.invalid {
+  background: #FDECEA;
+  border: 1px solid rgba(192,57,43,0.4);
+  color: #C0392B;
+}
+
+.integrity-dot {
+  width: 7px; height: 7px;
+  border-radius: 50%;
+  background: currentColor;
+  flex-shrink: 0;
+}
+
+/* ── CONTENT ── */
+.passport-content {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 28px 32px 60px;
+}
+
+.two-col {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+@media(max-width: 700px) { .two-col { grid-template-columns: 1fr; } }
+
+/* ── CARD ── */
+.card {
+  background: var(--eu-surface);
+  border: 1px solid var(--eu-border);
+  border-radius: 6px;
+  overflow: hidden;
+  margin-bottom: 16px;
+  box-shadow: 0 1px 4px rgba(0,51,153,0.04);
+  animation: slideUp 0.35s ease both;
+}
+
+.card-2col { margin-bottom: 0; }
+
+@keyframes slideUp {
+  from { opacity:0; transform:translateY(10px); }
+  to   { opacity:1; transform:translateY(0); }
+}
+
+.card:nth-child(1)  { animation-delay: 0.05s; }
+.card:nth-child(2)  { animation-delay: 0.10s; }
+.card:nth-child(3)  { animation-delay: 0.14s; }
+.card:nth-child(4)  { animation-delay: 0.18s; }
+.card:nth-child(5)  { animation-delay: 0.22s; }
+.card:nth-child(6)  { animation-delay: 0.26s; }
+.card:nth-child(7)  { animation-delay: 0.30s; }
+.card:nth-child(8)  { animation-delay: 0.34s; }
+.card:nth-child(9)  { animation-delay: 0.38s; }
+.card:nth-child(10) { animation-delay: 0.42s; }
+
+.card-header {
+  padding: 12px 18px;
+  border-bottom: 1px solid var(--eu-border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #FAFBFF;
+}
+
+.card-title {
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--eu-navy);
+}
+
+.card-body { padding: 16px 18px; }
+
+/* ── INFO ROWS ── */
+.info-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 9px 0;
+  border-bottom: 1px solid var(--eu-border);
+}
+
+.info-row:last-child { border-bottom: none; padding-bottom: 0; }
+.info-row:first-child { padding-top: 0; }
+
+.info-label {
+  font-size: 0.75rem;
+  color: var(--eu-muted);
+  flex-shrink: 0;
+  max-width: 48%;
+  padding-top: 1px;
+}
+
+.info-value {
+  font-size: 0.85rem;
+  color: var(--eu-text);
+  font-weight: 500;
+  text-align: right;
+  word-break: break-word;
+}
+
+/* ── IDENTIFIER ROWS ── */
+.id-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--eu-border);
+}
+
+.id-row:last-child { border-bottom: none; }
+.id-row:first-child { padding-top: 0; }
+
+.id-num {
+  width: 22px; height: 22px;
+  border-radius: 50%;
+  background: var(--eu-info-bg);
+  border: 1px solid rgba(0,51,153,0.15);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.65rem;
+  font-weight: 700;
+  color: var(--eu-navy);
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+.id-content { flex: 1; }
+
+.id-type {
+  font-size: 0.68rem;
+  color: var(--eu-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  margin-bottom: 2px;
+  font-weight: 500;
+}
+
+.id-val {
+  font-size: 0.82rem;
+  color: var(--eu-text);
+  font-weight: 500;
+  word-break: break-all;
+}
+
+.id-std {
+  font-size: 0.68rem;
+  color: var(--eu-muted2);
+  margin-top: 2px;
+}
+
+/* ── SCORE CARDS ── */
+.score-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+.score-box {
+  background: var(--eu-bg);
+  border: 1px solid var(--eu-border);
+  border-radius: 4px;
+  padding: 14px;
+}
+
+.score-num {
+  font-family: var(--serif);
+  font-size: 2.2rem;
+  font-weight: 600;
+  color: var(--eu-navy);
+  line-height: 1;
+  margin-bottom: 4px;
+}
+
+.score-lbl {
+  font-size: 0.72rem;
+  color: var(--eu-muted);
+  line-height: 1.4;
+  margin-bottom: 8px;
+}
+
+.score-bar {
+  height: 4px;
+  background: var(--eu-border);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.score-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--eu-navy), #4A7AFF);
+  border-radius: 2px;
+  transition: width 1s cubic-bezier(0.4,0,0.2,1);
+}
+
+/* ── CARBON METER ── */
+.carbon-row {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  margin-bottom: 14px;
+}
+
+.carbon-num {
+  font-family: var(--serif);
+  font-size: 3rem;
+  font-weight: 600;
+  color: var(--eu-navy);
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.carbon-meta { flex: 1; }
+.carbon-unit { font-size: 0.75rem; color: var(--eu-muted); margin-bottom: 3px; }
+.carbon-desc { font-size: 0.82rem; color: var(--eu-text); line-height: 1.4; }
+
+.carbon-scale {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.68rem;
+  color: var(--eu-muted2);
+  margin-bottom: 5px;
+}
+
+.carbon-gradient {
+  height: 6px;
+  border-radius: 3px;
+  background: linear-gradient(90deg, var(--eu-green), #FFCC00, var(--eu-red));
+  position: relative;
+}
+
+.carbon-needle {
+  position: absolute;
+  top: -5px;
+  width: 16px; height: 16px;
+  border-radius: 50%;
+  background: white;
+  border: 2px solid var(--eu-navy);
+  transform: translateX(-50%);
+  box-shadow: 0 1px 4px rgba(0,0,0,0.15);
+  transition: left 1s cubic-bezier(0.4,0,0.2,1);
+}
+
+/* ── LINK ROWS ── */
+.link-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 11px 0;
+  border-bottom: 1px solid var(--eu-border);
+  text-decoration: none;
+  color: var(--eu-text);
+  transition: color 0.15s;
+}
+
+.link-row:last-child { border-bottom: none; padding-bottom: 0; }
+.link-row:first-child { padding-top: 0; }
+.link-row:hover { color: var(--eu-navy); }
+
+.link-icon { font-size: 1.1rem; flex-shrink: 0; }
+.link-text { flex: 1; font-size: 0.85rem; font-weight: 500; }
+.link-arr { font-size: 0.9rem; color: var(--eu-muted); }
+
+/* ── TIMELINE ── */
+.tl-item {
+  display: flex;
+  gap: 14px;
+  padding-bottom: 18px;
+}
+
+.tl-item:last-child { padding-bottom: 0; }
+
+.tl-left { display: flex; flex-direction: column; align-items: center; flex-shrink: 0; }
+
+.tl-dot {
+  width: 10px; height: 10px;
+  border-radius: 50%;
+  background: var(--eu-navy);
+  border: 2px solid white;
+  box-shadow: 0 0 0 2px var(--eu-navy);
+  flex-shrink: 0;
+}
+
+.tl-dot.upd { background: var(--eu-yellow2); box-shadow: 0 0 0 2px var(--eu-yellow2); }
+.tl-line { flex: 1; width: 1px; background: var(--eu-border); margin-top: 4px; }
+.tl-body { flex: 1; }
+
+.tl-type {
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--eu-navy);
+  margin-bottom: 2px;
+}
+
+.tl-type.upd { color: #7A5C00; }
+.tl-date { font-size: 0.75rem; color: var(--eu-muted); margin-bottom: 5px; }
+
+.tl-note { font-size: 0.82rem; color: var(--eu-text); margin-bottom: 5px; }
+
+.tl-hash {
+  font-family: monospace;
+  font-size: 0.65rem;
+  color: var(--eu-muted);
+  background: var(--eu-bg);
+  padding: 4px 8px;
+  border-radius: 3px;
+  word-break: break-all;
+  line-height: 1.5;
+}
+
+/* ── BADGE ── */
+.badge {
+  font-size: 0.65rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 3px 8px;
+  border-radius: 2px;
+}
+
+.badge-green  { background: var(--eu-green-bg); color: var(--eu-green); }
+.badge-navy   { background: var(--eu-info-bg);  color: var(--eu-navy); border: 1px solid rgba(0,51,153,0.15); }
+.badge-yellow { background: #FFF8D6; color: #7A5C00; border: 1px solid rgba(255,204,0,0.3); }
+.badge-red    { background: var(--eu-red-bg);   color: var(--eu-red); }
+
+/* ── HASH BOX ── */
+.hash-box {
+  background: var(--eu-info-bg);
+  border: 1px solid var(--eu-border);
+  border-radius: 4px;
+  padding: 10px 12px;
+  font-family: monospace;
+  font-size: 0.68rem;
+  color: var(--eu-navy);
+  word-break: break-all;
+  line-height: 1.6;
+  margin-top: 10px;
+}
+
+.hash-label {
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--eu-muted);
+  margin-bottom: 5px;
+}
+
+/* ── LOADING ── */
+#loading-screen {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(244,246,251,0.92);
+  backdrop-filter: blur(6px);
+  z-index: 300;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 16px;
+}
+
+#loading-screen.active { display: flex; }
+
+.spinner {
+  width: 36px; height: 36px;
+  border: 3px solid var(--eu-border);
+  border-top-color: var(--eu-navy);
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.loading-txt { font-size: 0.82rem; color: var(--eu-navy); font-weight: 500; }
+.loading-sub { font-size: 0.72rem; color: var(--eu-muted); }
+
+/* ── FOOTER ── */
+footer {
+  background: var(--eu-navy);
+  color: rgba(255,255,255,0.45);
+  text-align: center;
+  padding: 20px;
+  font-size: 0.7rem;
+  letter-spacing: 0.04em;
+  margin-top: auto;
+}
+
+footer strong { color: var(--eu-yellow); font-weight: 500; }
+
+/* ── GERİ DÖNÜŞÜM BUTONU ── */
+.recycle-wrap { margin: 18px 0 4px; }
+.recycle-btn {
+  display: flex; align-items: center; justify-content: center; gap: 10px;
+  width: 100%; padding: 14px 20px;
+  background: var(--eu-green-bg);
+  border: 1px solid rgba(26,122,74,0.25);
+  border-radius: 6px;
+  color: var(--eu-green);
+  font-family: var(--sans); font-size: 0.88rem; font-weight: 600;
+  cursor: pointer; transition: all 0.18s; letter-spacing: 0.01em;
+}
+.recycle-btn:hover { background: #d4eddf; border-color: rgba(26,122,74,0.45); }
+.recycle-btn-icon { font-size: 1.2rem; }
+
+/* ── HARİTA MODALİ ── */
+#map-overlay {
+  display: none; position: fixed; inset: 0; z-index: 600;
+  background: rgba(13,27,62,0.55); backdrop-filter: blur(4px);
+  align-items: flex-end; justify-content: center;
+  padding: 0;
+}
+#map-overlay.active { display: flex; }
+.map-modal {
+  background: white; width: 100%; max-width: 760px;
+  height: 88vh; border-radius: 14px 14px 0 0;
+  overflow: hidden; display: flex; flex-direction: column;
+  box-shadow: 0 -8px 40px rgba(0,51,153,0.18);
+  animation: slideUp 0.28s ease;
+}
+@keyframes slideUp { from { transform: translateY(60px); opacity:0; } to { transform: translateY(0); opacity:1; } }
+.map-modal-header {
+  padding: 16px 20px; border-bottom: 1px solid var(--eu-border);
+  display: flex; align-items: center; justify-content: space-between;
+  flex-shrink: 0; background: white;
+}
+.map-modal-title { font-family: var(--serif); font-size: 1rem; font-weight: 600; color: var(--eu-navy); }
+.map-modal-sub   { font-size: 0.72rem; color: var(--eu-muted); margin-top: 2px; }
+.map-close-btn   { background: none; border: none; font-size: 1.2rem; cursor: pointer; color: var(--eu-muted); padding: 4px 8px; border-radius: 4px; }
+.map-close-btn:hover { background: var(--eu-bg); color: var(--eu-text); }
+#map-container   { flex: 1; min-height: 0; }
+.map-status-bar  {
+  padding: 8px 16px; background: var(--eu-bg); border-top: 1px solid var(--eu-border);
+  font-size: 0.75rem; color: var(--eu-muted); flex-shrink: 0;
+  display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap;
+}
+.map-legend { display: flex; gap: 14px; flex-wrap: wrap; }
+.map-legend-item { display: flex; align-items: center; gap: 5px; font-size: 0.72rem; }
+.legend-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+
+/* ── TAMİRCİ GİRİŞİ ── */
+.tech-entry-wrap { text-align: center; margin: 28px 0 6px; }
+.tech-entry-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 0.66rem;
+  color: var(--eu-muted2);
+  opacity: 0.28;
+  letter-spacing: 0.07em;
+  padding: 8px 14px;
+  font-family: var(--sans);
+  transition: opacity 0.3s;
+}
+.tech-entry-btn:hover { opacity: 0.6; }
+
+</style>
+</head>
+<body>
+
+<!-- LOADING -->
+<div id="loading-screen">
+  <div class="spinner"></div>
+  <div class="loading-txt" id="loading-txt">Sorgulanıyor…</div>
+  <div class="loading-sub" id="loading-sub">Blockchain ve IPFS bağlantısı kuruluyor</div>
+</div>
+
+<!-- HEADER -->
+<header>
+  <div class="header-top">
+    <div class="brand-name">Dijital Ürün Pasaportu</div>
+    <div class="header-right">
+      <button class="btn-back" id="btn-back" onclick="goBack()">← Yeni Sorgulama</button>
+    </div>
+  </div>
+</header>
+
+<!-- SEARCH -->
+<div id="search-screen">
+  <div class="search-wrap">
+    <div class="search-title">Ürün Pasaportu Sorgula</div>
+    <div class="search-sub">QR kod okutarak ulaştınız veya ürün ID'sini aşağıya girin.</div>
+    <div class="search-box">
+      <input type="text" class="search-input" id="pid-input" placeholder="Ürün ID (örn. DPP-TR-2025-001)" autocomplete="off">
+      <button class="btn-primary" onclick="search()">Sorgula</button>
+    </div>
+    <div class="search-hint">Bu sistem AB ESPR Direktifi (AB/2024/1781) kapsamında çalışmaktadır.</div>
+    <div id="search-error"></div>
+  </div>
+</div>
+
+<!-- PASSPORT -->
+<div id="passport-screen">
+
+  <!-- Hero -->
+  <div class="passport-hero">
+    <div class="hero-inner">
+      <div class="hero-meta" id="hero-meta"></div>
+      <div class="hero-badges" id="hero-badges"></div>
+      <div class="hero-name" id="hero-name"></div>
+      <div class="hero-brand" id="hero-brand"></div>
+      <div id="hero-integrity"></div>
+    </div>
+  </div>
+
+  <!-- Content -->
+  <div class="passport-content" id="passport-content"></div>
+
+</div>
+
+<!-- HARİTA MODALİ -->
+<div id="map-overlay" onclick="handleMapOverlay(event)">
+  <div class="map-modal">
+    <div class="map-modal-header">
+      <div>
+        <div class="map-modal-title">♻️ Yakınımdaki Geri Dönüşüm Noktaları</div>
+        <div class="map-modal-sub" id="map-modal-sub">Konum alınıyor…</div>
+      </div>
+      <button class="map-close-btn" onclick="closeMap()">✕</button>
+    </div>
+    <div id="map-container"></div>
+    <div class="map-status-bar">
+      <div class="map-legend">
+        <div class="map-legend-item"><div class="legend-dot" style="background:#1A7A4A"></div> Geri dönüşüm noktası</div>
+        <div class="map-legend-item"><div class="legend-dot" style="background:#003399"></div> Elektronik mağaza</div>
+        <div class="map-legend-item" style="gap:5px;"><span style="font-size:13px;line-height:1;">🛍️</span> MediaMarkt mağazası</div>
+        <div class="map-legend-item"><div class="legend-dot" style="background:#C0392B"></div> Konumunuz</div>
+      </div>
+      <div id="map-count" style="color:var(--eu-navy);font-weight:600;"></div>
+    </div>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <strong>AB Dijital Ürün Pasaportu Sistemi</strong>
+  <br>ESPR Direktifi (AB/2024/1781) kapsamında prototip olarak geliştirilmiştir
+</footer>
+
+
+<script>
+// ══════════════════════════════════
+// CONFIG
+// ══════════════════════════════════
+const CONTRACT_ADDRESS = "0x240a356a9e8Dd23c08ba2c14dCC87bd3E14FCA21";
+const RPC_URL          = "https://eth-sepolia.g.alchemy.com/v2/9uCLzyb6K9SAGKz4_k_RB";
+const IPFS_GATEWAY     = "https://gateway.pinata.cloud/ipfs/";
+const ETHERSCAN        = "https://sepolia.etherscan.io";
+
+const ABI = [
+  "function getHistory(string) external view returns (tuple(string ipfsHash,string dataHash,address updatedBy,uint256 timestamp,string changeNote)[])",
+  "function verifyIntegrity(string,string) external view returns (bool,string)",
+  "event PassportCreated(string indexed,string,string,string,address indexed,uint256)",
+  "event PassportUpdated(string indexed,string,string,address indexed,string,uint256)"
+];
+
+let provider, contract;
+
+// ══════════════════════════════════
+// INIT
+// ══════════════════════════════════
+async function init() {
+  provider = new ethers.JsonRpcProvider(RPC_URL);
+  contract  = new ethers.Contract(CONTRACT_ADDRESS, ABI, provider);
+
+  // URL'de pid varsa direkt yükle (QR kod senaryosu)
+  const params = new URLSearchParams(window.location.search);
+  const pid    = params.get('pid');
+  if (pid) {
+    document.getElementById('pid-input').value = pid;
+    loadPassport(pid);
+  }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('pid-input').addEventListener('keydown', e => {
+    if (e.key === 'Enter') search();
+  });
+  init();
+});
+
+function search() {
+  const pid = document.getElementById('pid-input').value.trim();
+  if (!pid) return;
+  loadPassport(pid);
+}
+
+function goBack() {
+  document.getElementById('passport-screen').classList.remove('active');
+  document.getElementById('search-screen').classList.remove('hidden');
+  document.getElementById('btn-back').classList.remove('show');
+}
+
+// ══════════════════════════════════
+// LOAD
+// ══════════════════════════════════
+async function loadPassport(pid) {
+  showLoading('Pasaport sorgulanıyor…', 'Blockchain bağlantısı');
+  document.getElementById('passport-content').innerHTML = '';
+
+  try {
+    const history = await contract.getHistory(pid);
+    if (!history || history.length === 0) throw new Error('Bu ID için pasaport bulunamadı.');
+
+    // En son IPFS hash'ini al
+    const lastEntry = history[history.length - 1];
+    const passport = {
+      ipfsHash:  history[0].ipfsHash,
+      operator:  history[0].updatedBy,
+      createdAt: history[0].timestamp,
+      updatedAt: lastEntry.timestamp,
+      active:    true
+    };
+
+    setLoading('Veri yükleniyor…', 'IPFS\'ten çekiliyor');
+    let data = {};
+    try {
+      // En son güncellemenin IPFS hash'inden veri çek
+      const res = await fetch(IPFS_GATEWAY + lastEntry.ipfsHash);
+      data = await res.json();
+    } catch(e) { data = { name: pid }; }
+
+    setLoading('Bütünlük doğrulanıyor…', 'SHA-256 karşılaştırması');
+    let integrityOk = false, storedHash = '';
+    try {
+      const computed = await sha256(JSON.stringify(data));
+      const [ok, sh] = await contract.verifyIntegrity(pid, computed);
+      integrityOk = ok; storedHash = sh;
+    } catch(e) {}
+
+    hideLoading();
+    render(pid, passport, data, history, integrityOk, storedHash);
+
+  } catch(e) {
+    hideLoading();
+    const errEl = document.getElementById('search-error');
+    errEl.textContent = 'Hata: ' + e.message;
+    errEl.style.display = 'block';
+  }
+}
+
+// ══════════════════════════════════
+// RENDER
+// ══════════════════════════════════
+function render(pid, passport, data, history, intOk, storedHash) {
+  const env  = data.environmental  || {};
+  const dur  = data.durability     || {};
+  const lc   = data.lifecycle      || {};
+  const comp = data.compliance     || {};
+  const eol  = data.endOfLife      || {};
+  const ids  = data.identifiers    || {};
+
+  const fmtDate = ts => new Date(Number(ts) * 1000).toLocaleDateString('tr-TR', { day:'numeric', month:'long', year:'numeric' });
+
+  // Hero
+  document.getElementById('hero-meta').textContent = 'Ürün ID: ' + pid + '  ·  Kayıt: ' + fmtDate(passport.createdAt);
+
+  document.getElementById('hero-badges').innerHTML =
+    badge(lc.stage || 'Sıfır', 'hbadge-yellow') +
+    badge('Blockchain Kayıtlı', 'hbadge-white') +
+    (passport.active ? badge('Aktif', 'hbadge-white') : '');
+
+  document.getElementById('hero-name').textContent  = data.name || pid;
+  document.getElementById('hero-brand').textContent = [data.brand, data.modelName].filter(Boolean).join('  ·  ') || '—';
+
+  document.getElementById('hero-integrity').innerHTML = `
+    <div class="integrity-strip ${intOk ? 'valid' : 'invalid'}">
+      <div class="integrity-dot"></div>
+      ${intOk ? '✓ Veri Bütünlüğü Doğrulandı — Manipülasyon Tespit Edilmedi' : '⚠ Veri Uyuşmazlığı Tespit Edildi'}
+    </div>`;
+
+  // Content
+  const c = document.getElementById('passport-content');
+  c.innerHTML = '';
+
+  // ── 1. Kimlik Bilgileri ──
+  c.appendChild(mkCard('Ürün Kimlik Bilgileri', `
+    ${iRow('Ürün Adı', data.name)}
+    ${iRow('Üretici', data.manufacturer)}
+    ${iRow('Marka', data.brand)}
+    ${iRow('Model', data.modelName)}
+    ${iRow('Üretim Yeri', data.manufacturingCountry)}
+    ${iRow('Kayıt Tarihi', fmtDate(passport.createdAt))}
+    ${iRow('Son Güncelleme', fmtDate(passport.updatedAt))}
+  `));
+
+  // ── 2. AB DPP Tanımlayıcıları ──
+  const idCard = document.createElement('div');
+  idCard.className = 'card';
+  idCard.innerHTML = `
+    <div class="card-header">
+      <div class="card-title">AB DPP Tanımlayıcıları</div>
+      <span class="badge badge-navy">4 Tanımlayıcı</span>
+    </div>
+    <div class="card-body">
+      ${idRow(1, 'Ürün Tanımlayıcısı', ids.productId || pid, 'GS1 GTIN / Özel ID')}
+      ${idRow(2, 'Ekonomik Operatör ID', ids.economicOperatorId || passport.operator.slice(0,14)+'…', 'EORI / LEI')}
+      ${idRow(3, 'Tesis Kodu', ids.facilityGLN || data.manufacturingCountry || '—', 'GS1 Global Location Number')}
+      ${idRow(4, 'Kayıt Defteri', 'Ethereum Sepolia (Chain ID: 11155111)', CONTRACT_ADDRESS.slice(0,16)+'…')}
+    </div>`;
+  c.appendChild(idCard);
+
+  // ── 3. Çevresel ──
+  const carbon   = env.carbonFootprint?.value ?? null;
+  const carbonPct = carbon !== null ? Math.min((carbon / 50) * 100, 100) : 0;
+  const envInner = `
+    ${carbon !== null ? `
+      <div class="carbon-row">
+        <div class="carbon-num">${carbon}</div>
+        <div class="carbon-meta">
+          <div class="carbon-unit">${env.carbonFootprint?.unit || 'kgCO2eq'}</div>
+          <div class="carbon-desc">Karbon Ayak İzi</div>
+        </div>
+      </div>
+      <div class="carbon-scale"><span>Düşük</span><span>Orta</span><span>Yüksek</span></div>
+      <div class="carbon-gradient"><div class="carbon-needle" style="left:${carbonPct}%"></div></div>
+      <div style="height:12px"></div>
+    ` : ''}
+    ${iRow('Geri Dön. İçerik Oranı', env.recycledContentRatio != null ? env.recycledContentRatio + '%' : null)}
+    ${iRow('Su Tüketimi', env.waterConsumption?.value != null ? env.waterConsumption.value + ' litre' : null)}
+    ${iRow('Yenilenebilir Enerji', env.renewableEnergyRatio != null ? env.renewableEnergyRatio + '%' : null)}
+    ${iRow('Nakliye Emisyonları', env.transportEmissions?.value != null ? env.transportEmissions.value + ' kgCO2eq' : null)}
+    ${iRow('Enerji Verimliliği', env.energyEfficiency)}
+  `;
+
+  const envCard = document.createElement('div');
+  envCard.className = 'card';
+  envCard.innerHTML = `<div class="card-header"><div class="card-title">Çevresel Bilgiler</div></div><div class="card-body">${envInner}</div>`;
+  c.appendChild(envCard);
+
+  // ── 4. Dayanıklılık ──
+  const rScore = dur.repairabilityScore;
+  const sScore = dur.sparePartsScore;
+  const sw     = dur.softwareSupportMonths;
+
+  const durCard = document.createElement('div');
+  durCard.className = 'card';
+  durCard.innerHTML = `
+    <div class="card-header"><div class="card-title">Dayanıklılık ve Onarılabilirlik</div></div>
+    <div class="card-body">
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:${sw != null ? '14px' : '0'}">
+        <div style="background:var(--eu-bg);border:1px solid var(--eu-border);border-radius:4px;padding:12px">
+          <div style="font-family:var(--serif);font-size:1.6rem;font-weight:600;color:var(--eu-navy);line-height:1;margin-bottom:4px">${rScore ?? '—'}${rScore != null ? '<span style="font-size:0.8rem;font-weight:300;color:var(--eu-muted)"> /10</span>' : ''}</div>
+          <div style="font-size:0.7rem;color:var(--eu-muted)">Onarılabilirlik Skoru</div>
+          ${rScore != null ? `<div style="height:3px;background:var(--eu-border);border-radius:2px;margin-top:8px;overflow:hidden"><div style="height:100%;width:${rScore*10}%;background:linear-gradient(90deg,var(--eu-navy),#4A7AFF);border-radius:2px"></div></div>` : ''}
+        </div>
+        <div style="background:var(--eu-bg);border:1px solid var(--eu-border);border-radius:4px;padding:12px">
+          <div style="font-family:var(--serif);font-size:1.6rem;font-weight:600;color:var(--eu-navy);line-height:1;margin-bottom:4px">${sScore ?? '—'}${sScore != null ? '<span style="font-size:0.8rem;font-weight:300;color:var(--eu-muted)"> /10</span>' : ''}</div>
+          <div style="font-size:0.7rem;color:var(--eu-muted)">Yedek Parça Erişimi</div>
+          ${sScore != null ? `<div style="height:3px;background:var(--eu-border);border-radius:2px;margin-top:8px;overflow:hidden"><div style="height:100%;width:${sScore*10}%;background:linear-gradient(90deg,var(--eu-navy),#4A7AFF);border-radius:2px"></div></div>` : ''}
+        </div>
+        <div style="background:var(--eu-bg);border:1px solid var(--eu-border);border-radius:4px;padding:12px">
+          <div style="font-family:var(--serif);font-size:1.6rem;font-weight:600;color:var(--eu-navy);line-height:1;margin-bottom:4px">${sw ?? '—'}${sw != null ? '<span style="font-size:0.8rem;font-weight:300;color:var(--eu-muted)"> ay</span>' : ''}</div>
+          <div style="font-size:0.7rem;color:var(--eu-muted)">Yazılım Güncelleme Taahhüdü</div>
+        </div>
+      </div>
+    </div>`;
+  c.appendChild(durCard);
+
+  // ── 5. Yaşam Döngüsü + EOL (yan yana, kompakt) ──
+  const row2 = document.createElement('div');
+  row2.className = 'two-col';
+
+  const lcCard = document.createElement('div');
+  lcCard.className = 'card card-2col';
+  lcCard.innerHTML = `
+    <div class="card-header"><div class="card-title">Yaşam Döngüsü</div></div>
+    <div class="card-body">
+      ${iRow('Aşama', lc.stage)}
+      ${lc.renewalCenter ? iRow('Yetkili Yenileme Merkezi', lc.renewalCenter) : ''}
+    </div>`;
+  row2.appendChild(lcCard);
+
+  const eolCard = document.createElement('div');
+  eolCard.className = 'card card-2col';
+  eolCard.innerHTML = `
+    <div class="card-header"><div class="card-title">Geri Dönüşüm ve Ürün Sonu</div></div>
+    <div class="card-body">
+      ${iRow('Geri Dönüştürülebilirlik', eol.recyclabilityRate != null ? eol.recyclabilityRate + '%' : null)}
+      ${eol.batteryRecyclingProtocol ? iRow('Pil Geri Dönüşüm Protokolü', eol.batteryRecyclingProtocol) : ''}
+      ${eol.disposalInstructions ? iRow('Bertaraf Talimatları', eol.disposalInstructions) : ''}
+    </div>`;
+  row2.appendChild(eolCard);
+
+  c.appendChild(row2);
+
+  // ── 7. Uyumluluk Belgeleri ──
+  const hasLinks = comp.manualUrl || comp.declarationUrl || comp.rohsUrl || comp.weeeUrl;
+  if (hasLinks) {
+    const linkCard = document.createElement('div');
+    linkCard.className = 'card';
+    let links = '';
+    if (comp.manualUrl)     links += lRow('📖', 'Kullanım Kılavuzu', comp.manualUrl);
+    if (comp.declarationUrl)links += lRow('📋', 'AB Uygunluk Beyanı', comp.declarationUrl);
+    if (comp.rohsUrl)       links += lRow('✅', 'RoHS Direktif Belgesi', comp.rohsUrl);
+    if (comp.weeeUrl)       links += lRow('♻️', 'WEEE Direktif Belgesi', comp.weeeUrl);
+    links += lRow('🔗', 'Sepolia Etherscan\'de Görüntüle', ETHERSCAN + '/address/' + CONTRACT_ADDRESS);
+    linkCard.innerHTML = `<div class="card-header"><div class="card-title">Uyumluluk Belgeleri ve Bağlantılar</div></div><div class="card-body">${links}</div>`;
+    c.appendChild(linkCard);
+  }
+
+  // ── 8. Veri Bütünlüğü ──
+  const intCard = document.createElement('div');
+  intCard.className = 'card';
+  intCard.innerHTML = `
+    <div class="card-header">
+      <div class="card-title">Veri Bütünlüğü</div>
+      <span class="badge ${intOk ? 'badge-green' : 'badge-red'}">${intOk ? 'Doğrulandı' : 'Uyuşmazlık'}</span>
+    </div>
+    <div class="card-body">
+      <div class="integrity-strip ${intOk ? 'valid' : 'invalid'}">
+        <div class="integrity-dot"></div>
+        ${intOk ? 'Bu ürünün verileri değiştirilmemiştir. Blockchain tarafından doğrulanmıştır.' : 'Veri uyuşmazlığı tespit edildi. Lütfen satıcıya başvurun.'}
+      </div>
+    </div>`;
+  c.appendChild(intCard);
+
+  // ── 9. Güncelleme Geçmişi ──
+  // "__SC__" etiketli girişler sadece tedarik zinciri güncellemesidir;
+  // bunlar Tedarik Zinciri kartında gösterilir, bu bölümde gizlenir.
+  if (history && history.length > 0) {
+    const visibleHistory = history.filter(h => !String(h.changeNote || '').startsWith('__SC__ '));
+    if (visibleHistory.length > 0) {
+      const histCard = document.createElement('div');
+      histCard.className = 'card';
+      let tlHTML = '';
+      visibleHistory.forEach((h, idx) => {
+        const d = new Date(Number(h.timestamp) * 1000).toLocaleDateString('tr-TR', { day:'numeric', month:'long', year:'numeric' });
+        const note = String(h.changeNote || '').replace(/^__SC__\s*/, '');
+        tlHTML += `
+          <div class="tl-item">
+            <div class="tl-left">
+              <div class="tl-dot ${idx === 0 ? '' : 'upd'}"></div>
+              ${idx < visibleHistory.length - 1 ? '<div class="tl-line"></div>' : ''}
+            </div>
+            <div class="tl-body">
+              <div class="tl-type ${idx === 0 ? '' : 'upd'}">${idx === 0 ? 'İlk Kayıt' : 'Güncelleme'}</div>
+              <div class="tl-date">${d}</div>
+              ${note ? `<div class="tl-note">${note}</div>` : ''}
+            </div>
+          </div>`;
+      });
+      histCard.innerHTML = `
+        <div class="card-header">
+          <div class="card-title">Güncelleme Geçmişi</div>
+          <span class="badge badge-navy">${visibleHistory.length} Kayıt</span>
+        </div>
+        <div class="card-body">${tlHTML}</div>`;
+      c.appendChild(histCard);
+    }
+  }
+
+  // ── 10. Tedarik Zinciri ──
+  const scEvents = data.supplyChain?.events;
+  if (scEvents && scEvents.length > 0) {
+    const scCard = document.createElement('div');
+    scCard.className = 'card';
+    const scTypeColors = {
+      'Hammadde Tedariki':     { bg:'#E8F5EF', color:'#1A7A4A' },
+      'Üretim':                { bg:'#EBF0FF', color:'#003399' },
+      'Kalite Kontrol':        { bg:'#FFF8E1', color:'#7A5C00' },
+      'Depolama':              { bg:'#F4F6FB', color:'#5A6A8A' },
+      'Sevkiyat':              { bg:'#EBF0FF', color:'#2244AA' },
+      'Gümrük':                { bg:'#FDECEA', color:'#C0392B' },
+      'Dağıtım':               { bg:'#EBF0FF', color:'#2244AA' },
+      'Son Kullanıcı Teslimi': { bg:'#E8F5EF', color:'#1A7A4A' },
+      'Geri Dönüşüm':          { bg:'#E8F5EF', color:'#1A7A4A' },
+    };
+    let scHTML = '';
+    scEvents.forEach((ev, i) => {
+      const clr = scTypeColors[ev.type] || { bg:'#F4F6FB', color:'#5A6A8A' };
+      const badge = `<span style="display:inline-block;padding:2px 9px;background:${clr.bg};color:${clr.color};border-radius:3px;font-size:0.72rem;font-weight:600;">${escHtml(ev.type||'—')}</span>`;
+      scHTML += `
+        <div class="tl-item">
+          <div class="tl-left">
+            <div class="tl-dot upd"></div>
+            ${i < scEvents.length - 1 ? '<div class="tl-line"></div>' : ''}
+          </div>
+          <div class="tl-body">
+            <div>${badge} <span style="font-size:0.74rem;color:var(--eu-muted);margin-left:4px;">${escHtml(ev.date||'')}</span></div>
+            ${ev.operator||ev.location ? `<div style="font-size:0.82rem;font-weight:500;margin-top:3px;">${escHtml(ev.operator||'')}${ev.operator&&ev.location?' · ':''}${escHtml(ev.location||'')}</div>` : ''}
+            ${ev.desc ? `<div class="tl-note">${escHtml(ev.desc)}</div>` : ''}
+            ${ev.cert ? `<div style="font-size:0.72rem;color:var(--eu-muted2);margin-top:2px;">📄 ${escHtml(ev.cert)}</div>` : ''}
+          </div>
+        </div>`;
+    });
+    scCard.innerHTML = `
+      <div class="card-header">
+        <div class="card-title">Tedarik Zinciri</div>
+        <span class="badge badge-navy">${scEvents.length} Olay</span>
+      </div>
+      <div class="card-body">${scHTML}</div>`;
+    c.appendChild(scCard);
+  }
+
+  // ── 11. Onarım Geçmişi ──
+  const repairs = data.repairHistory;
+  if (repairs && repairs.length > 0) {
+    const repCard = document.createElement('div');
+    repCard.className = 'card';
+    let repHTML = '';
+    repairs.forEach((r, i) => {
+      const repDate  = r.repairDate  ? new Date(r.repairDate).toLocaleDateString('tr-TR', { day:'numeric', month:'long', year:'numeric' }) : '—';
+      const appDate  = r.approvedAt  ? new Date(r.approvedAt).toLocaleDateString('tr-TR', { day:'numeric', month:'long', year:'numeric' }) : '';
+      repHTML += `
+        <div class="tl-item">
+          <div class="tl-left">
+            <div class="tl-dot upd"></div>
+            ${i < repairs.length - 1 ? '<div class="tl-line"></div>' : ''}
+          </div>
+          <div class="tl-body">
+            <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+              <span style="display:inline-block;padding:2px 9px;background:#EBF0FF;color:#003399;border-radius:3px;font-size:0.72rem;font-weight:600;">${escHtml(r.partName||'Parça')}</span>
+              <span style="font-size:0.74rem;color:var(--eu-muted);">${repDate}</span>
+            </div>
+            <div style="margin-top:6px;display:flex;align-items:center;gap:6px;font-size:0.82rem;">
+              ${r.oldPart ? `<span style="background:#F4F6FB;border:1px solid var(--eu-border);border-radius:3px;padding:2px 7px;color:var(--eu-muted);font-family:monospace;">${escHtml(r.oldPart)}</span><span style="color:var(--eu-muted);">→</span>` : ''}
+              <span style="background:#E8F5EF;border:1px solid #B8DFC9;border-radius:3px;padding:2px 7px;color:#1A7A4A;font-family:monospace;">${escHtml(r.newPart||'—')}</span>
+            </div>
+            ${r.description ? `<div class="tl-note" style="margin-top:4px;">${escHtml(r.description)}</div>` : ''}
+            <div style="margin-top:5px;font-size:0.72rem;color:var(--eu-muted2);">
+              Tamirci: <strong style="color:var(--eu-muted);">${escHtml(r.tamirciName||'—')}</strong>
+              ${appDate ? ` · Onay: ${appDate}` : ''}
+            </div>
+          </div>
+        </div>`;
+    });
+    repCard.innerHTML = `
+      <div class="card-header">
+        <div class="card-title">Onarım Geçmişi</div>
+        <span class="badge badge-navy">${repairs.length} Kayıt</span>
+      </div>
+      <div class="card-body">${repHTML}</div>`;
+    c.appendChild(repCard);
+  }
+
+  // ── Geri dönüşüm noktaları butonu ──
+  const recycleWrap = document.createElement('div');
+  recycleWrap.className = 'recycle-wrap';
+  recycleWrap.innerHTML = `<button class="recycle-btn" onclick="openMap()"><span class="recycle-btn-icon">♻️</span> Yakınımdaki Geri Dönüşüm Noktaları</button>`;
+  c.appendChild(recycleWrap);
+
+  // ── Belli belirsiz tamirci girişi ──
+  const techWrap = document.createElement('div');
+  techWrap.className = 'tech-entry-wrap';
+  techWrap.innerHTML = `<button class="tech-entry-btn" onclick="goToPortal('${pid}')">Ben bir tamirciyim</button>`;
+  c.appendChild(techWrap);
+
+  // Show passport
+  document.getElementById('search-screen').classList.add('hidden');
+  document.getElementById('passport-screen').classList.add('active');
+  document.getElementById('btn-back').classList.add('show');
+  window.scrollTo(0, 0);
+}
+
+// ══════════════════════════════════
+// HELPERS
+// ══════════════════════════════════
+function mkCard(title, bodyHTML) {
+  const el = document.createElement('div');
+  el.className = 'card';
+  el.innerHTML = `<div class="card-header"><div class="card-title">${title}</div></div><div class="card-body">${bodyHTML}</div>`;
+  return el;
+}
+
+function iRow(label, value) {
+  if (!value && value !== 0) return '';
+  return `<div class="info-row"><span class="info-label">${label}</span><span class="info-value">${value}</span></div>`;
+}
+
+function idRow(num, type, val, std) {
+  return `
+    <div class="id-row">
+      <div class="id-num">${num}</div>
+      <div class="id-content">
+        <div class="id-type">${type}</div>
+        <div class="id-val">${val || '—'}</div>
+        ${std ? `<div class="id-std">${std}</div>` : ''}
+      </div>
+    </div>`;
+}
+
+function sBox(val, lbl, unit, pct) {
+  return `
+    <div class="score-box">
+      <div class="score-num">${val ?? '—'}${val != null ? `<span style="font-size:0.9rem;font-weight:300;color:var(--eu-muted)"> ${unit}</span>` : ''}</div>
+      <div class="score-lbl">${lbl}</div>
+      ${val != null ? `<div class="score-bar"><div class="score-fill" style="width:${pct}%"></div></div>` : ''}
+    </div>`;
+}
+
+function lRow(icon, text, href) {
+  return `<a class="link-row" href="${href}" target="_blank" rel="noopener"><span class="link-icon">${icon}</span><span class="link-text">${text}</span><span class="link-arr">↗</span></a>`;
+}
+
+function badge(text, cls) {
+  return `<span class="hbadge ${cls}">${text}</span>`;
+}
+
+async function sha256(str) {
+  const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(str));
+  return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2,'0')).join('');
+}
+
+function showLoading(txt, sub) {
+  document.getElementById('loading-txt').textContent = txt;
+  document.getElementById('loading-sub').textContent = sub;
+  document.getElementById('loading-screen').classList.add('active');
+}
+
+function setLoading(txt, sub) {
+  document.getElementById('loading-txt').textContent = txt;
+  document.getElementById('loading-sub').textContent = sub;
+}
+
+function hideLoading() {
+  document.getElementById('loading-screen').classList.remove('active');
+}
+
+// ── Tamirci Portalı yönlendirme ──
+function goToPortal(pid) {
+  const base = window.location.href.replace(/[^\/]*(\?.*)?$/, '');
+  window.location.href = base + 'dpp-tamirci-portal.html?pid=' + encodeURIComponent(pid);
+}
+
+// ══════════════════════════════════
+// HARİTA — GERİ DÖNÜŞÜM NOKTALARI
+// ══════════════════════════════════
+
+// Sabit MediaMarkt konumları — her zaman haritada gösterilir
+const STATIC_LOCATIONS = [
+  // Balıkesir
+  { name: 'MediaMarkt — 10 Burda AVM',       city: 'Balıkesir',  lat: 39.6291, lng: 27.8906, type: 'electronics' },
+  { name: 'MediaMarkt — Bandırma Liman AVM', city: 'Bandırma',   lat: 40.3438, lng: 27.9811, type: 'electronics' },
+  { name: 'MediaMarkt — Edremit Novada AVM', city: 'Edremit',    lat: 39.5999, lng: 26.9913, type: 'electronics' },
+  // Çanakkale
+  { name: 'MediaMarkt — Kipa AVM',           city: 'Çanakkale',  lat: 40.1332, lng: 26.4170, type: 'electronics' },
+  // İzmir
+  { name: 'MediaMarkt — Forum Bornova',      city: 'İzmir',      lat: 38.4552, lng: 27.2144, type: 'electronics' },
+  { name: 'MediaMarkt — Hilltown Karşıyaka', city: 'İzmir',      lat: 38.4802, lng: 27.0756, type: 'electronics' },
+  { name: 'MediaMarkt — İstinye Park',       city: 'İzmir',      lat: 38.3896, lng: 27.0601, type: 'electronics' },
+  { name: 'MediaMarkt — İzmirpark',          city: 'İzmir',      lat: 38.4069, lng: 27.1357, type: 'electronics' },
+  { name: 'MediaMarkt — Optimum AVM',        city: 'İzmir',      lat: 38.3388, lng: 27.1350, type: 'electronics' },
+];
+
+let mapInstance    = null;
+let mapInitialized = false;
+
+function openMap() {
+  document.getElementById('map-overlay').classList.add('active');
+  document.body.style.overflow = 'hidden';
+  if (!mapInitialized) {
+    mapInitialized = true;
+    startMapFlow();
+  }
+}
+
+function closeMap() {
+  document.getElementById('map-overlay').classList.remove('active');
+  document.body.style.overflow = '';
+}
+
+function handleMapOverlay(e) {
+  if (e.target === document.getElementById('map-overlay')) closeMap();
+}
+
+function startMapFlow() {
+  setMapSub('Konum alınıyor…');
+  document.getElementById('map-count').textContent = '';
+
+  if (!navigator.geolocation) {
+    setMapSub('Tarayıcınız konum özelliğini desteklemiyor.');
+    buildMap(39.9334, 32.8597, 6, false);
+    return;
+  }
+
+  navigator.geolocation.getCurrentPosition(
+    pos => {
+      const { latitude: lat, longitude: lng } = pos.coords;
+      buildMap(lat, lng, 14, true);
+      queryOverpass(lat, lng);
+    },
+    () => {
+      setMapSub('Konum izni alınamadı. Varsayılan görünüm gösteriliyor.');
+      buildMap(39.9334, 32.8597, 6, false);
+    },
+    { enableHighAccuracy: true, timeout: 12000 }
+  );
+}
+
+function buildMap(lat, lng, zoom, showUser) {
+  if (mapInstance) { mapInstance.remove(); mapInstance = null; }
+
+  mapInstance = L.map('map-container', { zoomControl: true }).setView([lat, lng], zoom);
+
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+    maxZoom: 19
+  }).addTo(mapInstance);
+
+  if (showUser) {
+    const userIcon = L.divIcon({
+      html: '<div style="width:16px;height:16px;background:#C0392B;border:3px solid white;border-radius:50%;box-shadow:0 2px 8px rgba(192,57,43,0.5);"></div>',
+      className: '', iconSize: [16,16], iconAnchor: [8,8]
+    });
+    L.marker([lat, lng], { icon: userIcon, zIndexOffset: 1000 })
+      .addTo(mapInstance)
+      .bindPopup('<b style="font-family:\'DM Sans\',sans-serif;">Konumunuz</b>');
+  }
+}
+
+function haversineKm(lat1, lng1, lat2, lng2) {
+  const R = 6371, toR = x => x * Math.PI / 180;
+  const dLat = toR(lat2 - lat1), dLng = toR(lng2 - lng1);
+  const a = Math.sin(dLat/2)**2 + Math.cos(toR(lat1)) * Math.cos(toR(lat2)) * Math.sin(dLng/2)**2;
+  return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+}
+
+async function queryOverpass(lat, lng) {
+  setMapSub('Yakın noktalar aranıyor…');
+  const r = 10000;
+  const q = `[out:json][timeout:30];
+(
+  node["shop"="electronics"](around:${r},${lat},${lng});
+  way["shop"="electronics"](around:${r},${lat},${lng});
+  node["amenity"="recycling"](around:${r},${lat},${lng});
+  way["amenity"="recycling"](around:${r},${lat},${lng});
+  node["shop"="second_hand"](around:${r},${lat},${lng});
+  way["shop"="second_hand"](around:${r},${lat},${lng});
+  node["name"~"MediaMarkt|Media Markt|Saturn|Vatan|Teknosa|Bimeks|Electroworld|Expert",i](around:${r},${lat},${lng});
+);
+out center;`;
+
+  try {
+    const res = await fetch('https://overpass-api.de/api/interpreter', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: 'data=' + encodeURIComponent(q)
+    });
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    const data = await res.json();
+    renderMarkers(lat, lng, data.elements || []);
+  } catch (err) {
+    setMapSub('Yakın veri alınamadı, sabit konumlar gösteriliyor.');
+    renderMarkers(lat, lng, []);
+  }
+}
+
+function renderMarkers(userLat, userLng, elements) {
+  const greenIcon      = marker('#1A7A4A');
+  const navyIcon       = marker('#003399');
+  const navyLargeIcon  = markerLarge('#003399'); // MediaMarkt sabit konumlar için daha belirgin
+
+  const seen = new Set();
+  let count = 0;
+
+  // ── 1. Overpass sonuçları (dinamik, 10 km çevre) ──
+  elements.forEach(el => {
+    const lat = el.lat ?? el.center?.lat;
+    const lng = el.lon ?? el.center?.lon;
+    if (!lat || !lng) return;
+
+    const key = lat.toFixed(5) + ',' + lng.toFixed(5);
+    if (seen.has(key)) return;
+    seen.add(key);
+
+    const tags      = el.tags || {};
+    const recycling = tags.amenity === 'recycling' || tags.shop === 'second_hand';
+    const name      = tags.name || (recycling ? 'Geri Dönüşüm Noktası' : 'Elektronik Mağaza');
+    const dist      = haversineKm(userLat, userLng, lat, lng);
+    const distStr   = dist < 1 ? Math.round(dist * 1000) + ' m' : dist.toFixed(1) + ' km';
+    const typeStr   = recycling ? '♻️ Geri dönüşüm' : '🏪 Elektronik mağaza';
+
+    const popup = popupHtml(name, typeStr, distStr, tags.opening_hours, tags.phone);
+    L.marker([lat, lng], { icon: recycling ? greenIcon : navyIcon })
+      .addTo(mapInstance)
+      .bindPopup(popup);
+    count++;
+  });
+
+  // ── 2. Sabit MediaMarkt konumları (her zaman gösterilir) ──
+  STATIC_LOCATIONS.forEach(loc => {
+    const key = loc.lat.toFixed(5) + ',' + loc.lng.toFixed(5);
+    if (seen.has(key)) return; // Overpass zaten bulduysa çift marker koyma
+    seen.add(key);
+
+    const dist    = haversineKm(userLat, userLng, loc.lat, loc.lng);
+    const distStr = dist < 1 ? Math.round(dist * 1000) + ' m' : dist.toFixed(1) + ' km';
+    const typeStr = loc.type === 'recycling' ? '♻️ Geri dönüşüm' : '🏪 Elektronik mağaza';
+    const icon    = loc.type === 'recycling' ? greenIcon : navyLargeIcon;
+
+    const popup = popupHtml(loc.name, typeStr, distStr, null, null, loc.city);
+    L.marker([loc.lat, loc.lng], { icon })
+      .addTo(mapInstance)
+      .bindPopup(popup);
+    count++;
+  });
+
+  document.getElementById('map-count').textContent = count + ' nokta';
+  setMapSub(count > 0
+    ? count + ' nokta gösteriliyor'
+    : 'Haritada kayıtlı nokta bulunamadı.');
+}
+
+function popupHtml(name, typeStr, distStr, hours, phone, city) {
+  return `<div style="font-family:'DM Sans',sans-serif;min-width:180px;line-height:1.6;">
+    <div style="font-weight:600;font-size:0.88rem;margin-bottom:2px;">${escHtml(name)}</div>
+    ${city ? `<div style="font-size:0.72rem;color:#5A6A8A;margin-bottom:2px;">${escHtml(city)}</div>` : ''}
+    <div style="font-size:0.76rem;color:#5A6A8A;">${typeStr}</div>
+    <div style="font-size:0.76rem;color:#003399;font-weight:600;margin-top:3px;">📍 ${distStr} uzakta</div>
+    ${hours ? `<div style="font-size:0.72rem;color:#5A6A8A;margin-top:2px;">🕐 ${escHtml(hours)}</div>` : ''}
+    ${phone ? `<div style="font-size:0.72rem;color:#5A6A8A;">📞 ${escHtml(phone)}</div>` : ''}
+  </div>`;
+}
+
+function marker(color) {
+  return L.divIcon({
+    html: `<div style="width:13px;height:13px;background:${color};border:2.5px solid white;border-radius:50%;box-shadow:0 2px 6px rgba(0,0,0,0.28);"></div>`,
+    className: '', iconSize: [13,13], iconAnchor: [6,6]
+  });
+}
+
+// MediaMarkt gibi özel konumlar için daha büyük ve belirgin marker
+function markerLarge(color) {
+  return L.divIcon({
+    html: `<div style="display:flex;align-items:center;justify-content:center;width:26px;height:26px;background:${color};border:2.5px solid white;border-radius:6px;box-shadow:0 3px 8px rgba(0,0,0,0.35);font-size:13px;line-height:1;">🛍️</div>`,
+    className: '', iconSize: [26,26], iconAnchor: [13,13]
+  });
+}
+
+function setMapSub(txt) {
+  document.getElementById('map-modal-sub').textContent = txt;
+}
+
+function escHtml(s) {
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+</script>
+</body>
+</html>
