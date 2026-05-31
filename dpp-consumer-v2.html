@@ -993,11 +993,18 @@ function render(pid, passport, data, history, intOk, storedHash) {
 
   const lcCard = document.createElement('div');
   lcCard.className = 'card card-2col';
+
+  const stageColor = lc.stage === 'Sıfır' ? '#003399' : lc.stage === 'Yenilenmiş' ? '#1A7A4A' : '#7A5C00';
+  const stageBg    = lc.stage === 'Sıfır' ? '#EBF0FF' : lc.stage === 'Yenilenmiş' ? '#E8F5EF' : '#FFF8E1';
+
   lcCard.innerHTML = `
     <div class="card-header"><div class="card-title">Yaşam Döngüsü</div></div>
-    <div class="card-body">
-      ${iRow('Aşama', lc.stage)}
-      ${lc.renewalCenter ? iRow('Yetkili Yenileme Merkezi', lc.renewalCenter) : ''}
+    <div class="card-body" style="display:flex;flex-direction:column;align-items:center;padding:24px 16px;">
+      <div style="font-size:0.72rem;color:var(--eu-muted);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:10px;">Mevcut Aşama</div>
+      <div style="background:${stageBg};color:${stageColor};border:1.5px solid ${stageColor}30;border-radius:8px;padding:10px 32px;font-size:1rem;font-weight:700;letter-spacing:0.03em;">
+        ${lc.stage || '—'}
+      </div>
+      ${lc.renewalCenter ? `<div style="margin-top:16px;width:100%;padding-top:14px;border-top:1px solid var(--eu-border);">${iRow('Yetkili Yenileme Merkezi', lc.renewalCenter)}</div>` : ''}
     </div>`;
   row2.appendChild(lcCard);
 
