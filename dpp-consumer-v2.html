@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="tr">
 <head>
 <meta charset="UTF-8">
@@ -51,7 +51,6 @@ body::before {
   z-index: 200;
 }
 
-/* ── HEADER ── */
 header {
   background: var(--eu-navy);
   position: sticky;
@@ -95,7 +94,6 @@ header {
 .btn-back:hover { background: rgba(255,255,255,0.18); }
 .btn-back.show { display: block; }
 
-/* ── SEARCH SCREEN ── */
 #search-screen {
   flex: 1;
   display: flex;
@@ -188,7 +186,6 @@ header {
   display: none;
 }
 
-/* ── PASSPORT SCREEN ── */
 #passport-screen {
   display: none;
   flex: 1;
@@ -196,7 +193,6 @@ header {
 
 #passport-screen.active { display: block; }
 
-/* ── PASSPORT HERO ── */
 .passport-hero {
   background: var(--eu-navy);
   padding: 28px 32px 36px;
@@ -281,7 +277,6 @@ header {
   flex-shrink: 0;
 }
 
-/* ── CONTENT ── */
 .passport-content {
   max-width: 1100px;
   margin: 0 auto;
@@ -297,7 +292,6 @@ header {
 
 @media(max-width: 700px) { .two-col { grid-template-columns: 1fr; } }
 
-/* ── CARD ── */
 .card {
   background: var(--eu-surface);
   border: 1px solid var(--eu-border);
@@ -345,7 +339,6 @@ header {
 
 .card-body { padding: 16px 18px; }
 
-/* ── INFO ROWS ── */
 .info-row {
   display: flex;
   align-items: flex-start;
@@ -374,7 +367,6 @@ header {
   word-break: break-word;
 }
 
-/* ── IDENTIFIER ROWS ── */
 .id-row {
   display: flex;
   align-items: flex-start;
@@ -425,7 +417,6 @@ header {
   margin-top: 2px;
 }
 
-/* ── SCORE CARDS ── */
 .score-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -470,7 +461,6 @@ header {
   transition: width 1s cubic-bezier(0.4,0,0.2,1);
 }
 
-/* ── CARBON METER ── */
 .carbon-row {
   display: flex;
   align-items: center;
@@ -518,7 +508,6 @@ header {
   transition: left 1s cubic-bezier(0.4,0,0.2,1);
 }
 
-/* ── LINK ROWS ── */
 .link-row {
   display: flex;
   align-items: center;
@@ -538,7 +527,6 @@ header {
 .link-text { flex: 1; font-size: 0.85rem; font-weight: 500; }
 .link-arr { font-size: 0.9rem; color: var(--eu-muted); }
 
-/* ── TIMELINE ── */
 .tl-item {
   display: flex;
   gap: 14px;
@@ -587,7 +575,6 @@ header {
   line-height: 1.5;
 }
 
-/* ── BADGE ── */
 .badge {
   font-size: 0.65rem;
   font-weight: 600;
@@ -602,7 +589,6 @@ header {
 .badge-yellow { background: #FFF8D6; color: #7A5C00; border: 1px solid rgba(255,204,0,0.3); }
 .badge-red    { background: var(--eu-red-bg);   color: var(--eu-red); }
 
-/* ── HASH BOX ── */
 .hash-box {
   background: var(--eu-info-bg);
   border: 1px solid var(--eu-border);
@@ -625,7 +611,6 @@ header {
   margin-bottom: 5px;
 }
 
-/* ── LOADING ── */
 #loading-screen {
   display: none;
   position: fixed;
@@ -654,7 +639,6 @@ header {
 .loading-txt { font-size: 0.82rem; color: var(--eu-navy); font-weight: 500; }
 .loading-sub { font-size: 0.72rem; color: var(--eu-muted); }
 
-/* ── FOOTER ── */
 footer {
   background: var(--eu-navy);
   color: rgba(255,255,255,0.45);
@@ -667,7 +651,6 @@ footer {
 
 footer strong { color: var(--eu-yellow); font-weight: 500; }
 
-/* ── GERİ DÖNÜŞÜM BUTONU ── */
 .recycle-wrap { margin: 18px 0 4px; }
 .recycle-btn {
   display: flex; align-items: center; justify-content: center; gap: 10px;
@@ -682,7 +665,6 @@ footer strong { color: var(--eu-yellow); font-weight: 500; }
 .recycle-btn:hover { background: #d4eddf; border-color: rgba(26,122,74,0.45); }
 .recycle-btn-icon { font-size: 1.2rem; }
 
-/* ── HARİTA MODALİ ── */
 #map-overlay {
   display: none; position: fixed; inset: 0; z-index: 600;
   background: rgba(13,27,62,0.55); backdrop-filter: blur(4px);
@@ -717,7 +699,6 @@ footer strong { color: var(--eu-yellow); font-weight: 500; }
 .map-legend-item { display: flex; align-items: center; gap: 5px; font-size: 0.72rem; }
 .legend-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
 
-/* ── TAMİRCİ GİRİŞİ ── */
 .tech-entry-wrap { text-align: center; margin: 28px 0 6px; }
 .tech-entry-btn {
   background: none;
@@ -737,14 +718,12 @@ footer strong { color: var(--eu-yellow); font-weight: 500; }
 </head>
 <body>
 
-<!-- LOADING -->
 <div id="loading-screen">
   <div class="spinner"></div>
   <div class="loading-txt" id="loading-txt">Sorgulanıyor…</div>
   <div class="loading-sub" id="loading-sub">Blockchain ve IPFS bağlantısı kuruluyor</div>
 </div>
 
-<!-- HEADER -->
 <header>
   <div class="header-top">
     <div class="brand-name">Dijital Ürün Pasaportu</div>
@@ -754,13 +733,12 @@ footer strong { color: var(--eu-yellow); font-weight: 500; }
   </div>
 </header>
 
-<!-- SEARCH -->
 <div id="search-screen">
   <div class="search-wrap">
     <div class="search-title">Ürün Pasaportu Sorgula</div>
-    <div class="search-sub">QR kod okutarak ulaştınız veya ürün ID'sini aşağıya girin.</div>
+    <div class="search-sub">Ürün QR kodunu okutunuz ya da ürün ID'sini giriniz.</div>
     <div class="search-box">
-      <input type="text" class="search-input" id="pid-input" placeholder="Ürün ID (örn. DPP-TR-2025-001)" autocomplete="off">
+      <input type="text" class="search-input" id="pid-input" placeholder="" autocomplete="off">
       <button class="btn-primary" onclick="search()">Sorgula</button>
     </div>
     <div class="search-hint">Bu sistem AB ESPR Direktifi (AB/2024/1781) kapsamında çalışmaktadır.</div>
@@ -768,10 +746,8 @@ footer strong { color: var(--eu-yellow); font-weight: 500; }
   </div>
 </div>
 
-<!-- PASSPORT -->
 <div id="passport-screen">
 
-  <!-- Hero -->
   <div class="passport-hero">
     <div class="hero-inner">
       <div class="hero-meta" id="hero-meta"></div>
@@ -782,12 +758,10 @@ footer strong { color: var(--eu-yellow); font-weight: 500; }
     </div>
   </div>
 
-  <!-- Content -->
   <div class="passport-content" id="passport-content"></div>
 
 </div>
 
-<!-- HARİTA MODALİ -->
 <div id="map-overlay" onclick="handleMapOverlay(event)">
   <div class="map-modal">
     <div class="map-modal-header">
@@ -810,7 +784,6 @@ footer strong { color: var(--eu-yellow); font-weight: 500; }
   </div>
 </div>
 
-<!-- FOOTER -->
 <footer>
   <strong>AB Dijital Ürün Pasaportu Sistemi</strong>
   <br>ESPR Direktifi (AB/2024/1781) kapsamında prototip olarak geliştirilmiştir
@@ -818,9 +791,6 @@ footer strong { color: var(--eu-yellow); font-weight: 500; }
 
 
 <script>
-// ══════════════════════════════════
-// CONFIG
-// ══════════════════════════════════
 const CONTRACT_ADDRESS = "0x240a356a9e8Dd23c08ba2c14dCC87bd3E14FCA21";
 const RPC_URL          = "https://eth-sepolia.g.alchemy.com/v2/9uCLzyb6K9SAGKz4_k_RB";
 const IPFS_GATEWAY     = "https://gateway.pinata.cloud/ipfs/";
@@ -835,14 +805,10 @@ const ABI = [
 
 let provider, contract;
 
-// ══════════════════════════════════
-// INIT
-// ══════════════════════════════════
 async function init() {
   provider = new ethers.JsonRpcProvider(RPC_URL);
   contract  = new ethers.Contract(CONTRACT_ADDRESS, ABI, provider);
 
-  // URL'de pid varsa direkt yükle (QR kod senaryosu)
   const params = new URLSearchParams(window.location.search);
   const pid    = params.get('pid');
   if (pid) {
@@ -870,9 +836,6 @@ function goBack() {
   document.getElementById('btn-back').classList.remove('show');
 }
 
-// ══════════════════════════════════
-// LOAD
-// ══════════════════════════════════
 async function loadPassport(pid) {
   showLoading('Pasaport sorgulanıyor…', 'Blockchain bağlantısı');
   document.getElementById('passport-content').innerHTML = '';
@@ -881,7 +844,6 @@ async function loadPassport(pid) {
     const history = await contract.getHistory(pid);
     if (!history || history.length === 0) throw new Error('Bu ID için pasaport bulunamadı.');
 
-    // En son IPFS hash'ini al
     const lastEntry = history[history.length - 1];
     const passport = {
       ipfsHash:  history[0].ipfsHash,
@@ -894,7 +856,6 @@ async function loadPassport(pid) {
     setLoading('Veri yükleniyor…', 'IPFS\'ten çekiliyor');
     let data = {};
     try {
-      // En son güncellemenin IPFS hash'inden veri çek
       const res = await fetch(IPFS_GATEWAY + lastEntry.ipfsHash);
       data = await res.json();
     } catch(e) { data = { name: pid }; }
@@ -918,9 +879,6 @@ async function loadPassport(pid) {
   }
 }
 
-// ══════════════════════════════════
-// RENDER
-// ══════════════════════════════════
 function render(pid, passport, data, history, intOk, storedHash) {
   const env  = data.environmental  || {};
   const dur  = data.durability     || {};
@@ -931,7 +889,6 @@ function render(pid, passport, data, history, intOk, storedHash) {
 
   const fmtDate = ts => new Date(Number(ts) * 1000).toLocaleDateString('tr-TR', { day:'numeric', month:'long', year:'numeric' });
 
-  // Hero
   document.getElementById('hero-meta').textContent = 'Ürün ID: ' + pid + '  ·  Kayıt: ' + fmtDate(passport.createdAt);
 
   document.getElementById('hero-badges').innerHTML =
@@ -948,11 +905,9 @@ function render(pid, passport, data, history, intOk, storedHash) {
       ${intOk ? '✓ Veri Bütünlüğü Doğrulandı — Manipülasyon Tespit Edilmedi' : '⚠ Veri Uyuşmazlığı Tespit Edildi'}
     </div>`;
 
-  // Content
   const c = document.getElementById('passport-content');
   c.innerHTML = '';
 
-  // ── 1. Kimlik Bilgileri ──
   c.appendChild(mkCard('Ürün Kimlik Bilgileri', `
     ${iRow('Ürün Adı', data.name)}
     ${iRow('Üretici', data.manufacturer)}
@@ -963,7 +918,6 @@ function render(pid, passport, data, history, intOk, storedHash) {
     ${iRow('Son Güncelleme', fmtDate(passport.updatedAt))}
   `));
 
-  // ── 2. AB DPP Tanımlayıcıları ──
   const idCard = document.createElement('div');
   idCard.className = 'card';
   idCard.innerHTML = `
@@ -979,7 +933,6 @@ function render(pid, passport, data, history, intOk, storedHash) {
     </div>`;
   c.appendChild(idCard);
 
-  // ── 3. Çevresel ──
   const carbon   = env.carbonFootprint?.value ?? null;
   const carbonPct = carbon !== null ? Math.min((carbon / 50) * 100, 100) : 0;
   const envInner = `
@@ -1007,7 +960,6 @@ function render(pid, passport, data, history, intOk, storedHash) {
   envCard.innerHTML = `<div class="card-header"><div class="card-title">Çevresel Bilgiler</div></div><div class="card-body">${envInner}</div>`;
   c.appendChild(envCard);
 
-  // ── 4. Dayanıklılık ──
   const rScore = dur.repairabilityScore;
   const sScore = dur.sparePartsScore;
   const sw     = dur.softwareSupportMonths;
@@ -1036,7 +988,6 @@ function render(pid, passport, data, history, intOk, storedHash) {
     </div>`;
   c.appendChild(durCard);
 
-  // ── 5. Yaşam Döngüsü + EOL (yan yana, kompakt) ──
   const row2 = document.createElement('div');
   row2.className = 'two-col';
 
@@ -1063,7 +1014,6 @@ function render(pid, passport, data, history, intOk, storedHash) {
 
   c.appendChild(row2);
 
-  // ── 7. Uyumluluk Belgeleri ──
   const hasLinks = comp.manualUrl || comp.declarationUrl || comp.rohsUrl || comp.weeeUrl;
   if (hasLinks) {
     const linkCard = document.createElement('div');
@@ -1078,7 +1028,6 @@ function render(pid, passport, data, history, intOk, storedHash) {
     c.appendChild(linkCard);
   }
 
-  // ── 8. Veri Bütünlüğü ──
   const intCard = document.createElement('div');
   intCard.className = 'card';
   intCard.innerHTML = `
@@ -1094,9 +1043,6 @@ function render(pid, passport, data, history, intOk, storedHash) {
     </div>`;
   c.appendChild(intCard);
 
-  // ── 9. Güncelleme Geçmişi ──
-  // "__SC__" etiketli girişler sadece tedarik zinciri güncellemesidir;
-  // bunlar Tedarik Zinciri kartında gösterilir, bu bölümde gizlenir.
   if (history && history.length > 0) {
     const visibleHistory = history.filter(h => !String(h.changeNote || '').startsWith('__SC__ '));
     if (visibleHistory.length > 0) {
@@ -1129,7 +1075,6 @@ function render(pid, passport, data, history, intOk, storedHash) {
     }
   }
 
-  // ── 10. Tedarik Zinciri ──
   const scEvents = data.supplyChain?.events;
   if (scEvents && scEvents.length > 0) {
     const scCard = document.createElement('div');
@@ -1172,7 +1117,6 @@ function render(pid, passport, data, history, intOk, storedHash) {
     c.appendChild(scCard);
   }
 
-  // ── 11. Onarım Geçmişi ──
   const repairs = data.repairHistory;
   if (repairs && repairs.length > 0) {
     const repCard = document.createElement('div');
@@ -1213,28 +1157,22 @@ function render(pid, passport, data, history, intOk, storedHash) {
     c.appendChild(repCard);
   }
 
-  // ── Geri dönüşüm noktaları butonu ──
   const recycleWrap = document.createElement('div');
   recycleWrap.className = 'recycle-wrap';
   recycleWrap.innerHTML = `<button class="recycle-btn" onclick="openMap()"><span class="recycle-btn-icon">♻️</span> Yakınımdaki Geri Dönüşüm Noktaları</button>`;
   c.appendChild(recycleWrap);
 
-  // ── Belli belirsiz tamirci girişi ──
   const techWrap = document.createElement('div');
   techWrap.className = 'tech-entry-wrap';
   techWrap.innerHTML = `<button class="tech-entry-btn" onclick="goToPortal('${pid}')">Ben bir tamirciyim</button>`;
   c.appendChild(techWrap);
 
-  // Show passport
   document.getElementById('search-screen').classList.add('hidden');
   document.getElementById('passport-screen').classList.add('active');
   document.getElementById('btn-back').classList.add('show');
   window.scrollTo(0, 0);
 }
 
-// ══════════════════════════════════
-// HELPERS
-// ══════════════════════════════════
 function mkCard(title, bodyHTML) {
   const el = document.createElement('div');
   el.className = 'card';
@@ -1296,25 +1234,17 @@ function hideLoading() {
   document.getElementById('loading-screen').classList.remove('active');
 }
 
-// ── Tamirci Portalı yönlendirme ──
 function goToPortal(pid) {
   const base = window.location.href.replace(/[^\/]*(\?.*)?$/, '');
   window.location.href = base + 'dpp-tamirci-portal.html?pid=' + encodeURIComponent(pid);
 }
 
-// ══════════════════════════════════
-// HARİTA — GERİ DÖNÜŞÜM NOKTALARI
-// ══════════════════════════════════
 
-// Sabit MediaMarkt konumları — her zaman haritada gösterilir
 const STATIC_LOCATIONS = [
-  // Balıkesir
   { name: 'MediaMarkt — 10 Burda AVM',       city: 'Balıkesir',  lat: 39.6291, lng: 27.8906, type: 'electronics' },
   { name: 'MediaMarkt — Bandırma Liman AVM', city: 'Bandırma',   lat: 40.3438, lng: 27.9811, type: 'electronics' },
   { name: 'MediaMarkt — Edremit Novada AVM', city: 'Edremit',    lat: 39.5999, lng: 26.9913, type: 'electronics' },
-  // Çanakkale
   { name: 'MediaMarkt — Kipa AVM',           city: 'Çanakkale',  lat: 40.1332, lng: 26.4170, type: 'electronics' },
-  // İzmir
   { name: 'MediaMarkt — Forum Bornova',      city: 'İzmir',      lat: 38.4552, lng: 27.2144, type: 'electronics' },
   { name: 'MediaMarkt — Hilltown Karşıyaka', city: 'İzmir',      lat: 38.4802, lng: 27.0756, type: 'electronics' },
   { name: 'MediaMarkt — İstinye Park',       city: 'İzmir',      lat: 38.3896, lng: 27.0601, type: 'electronics' },
@@ -1433,7 +1363,6 @@ function renderMarkers(userLat, userLng, elements) {
   const seen = new Set();
   let count = 0;
 
-  // ── 1. Overpass sonuçları (dinamik, 10 km çevre) ──
   elements.forEach(el => {
     const lat = el.lat ?? el.center?.lat;
     const lng = el.lon ?? el.center?.lon;
@@ -1457,7 +1386,6 @@ function renderMarkers(userLat, userLng, elements) {
     count++;
   });
 
-  // ── 2. Sabit MediaMarkt konumları (her zaman gösterilir) ──
   STATIC_LOCATIONS.forEach(loc => {
     const key = loc.lat.toFixed(5) + ',' + loc.lng.toFixed(5);
     if (seen.has(key)) return; // Overpass zaten bulduysa çift marker koyma
@@ -1499,7 +1427,6 @@ function marker(color) {
   });
 }
 
-// MediaMarkt gibi özel konumlar için daha büyük ve belirgin marker
 function markerLarge(color) {
   return L.divIcon({
     html: `<div style="display:flex;align-items:center;justify-content:center;width:26px;height:26px;background:${color};border:2.5px solid white;border-radius:6px;box-shadow:0 3px 8px rgba(0,0,0,0.35);font-size:13px;line-height:1;">🛍️</div>`,
