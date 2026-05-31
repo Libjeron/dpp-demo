@@ -874,7 +874,7 @@ async function loadPassport(pid) {
   } catch(e) {
     hideLoading();
     const errEl = document.getElementById('search-error');
-    errEl.textContent = 'Hata: ' + e.message;
+    errEl.textContent = 'Bu ürünün dijital ürün pasaportu bulunmamaktadır.';
     errEl.style.display = 'block';
   }
 }
