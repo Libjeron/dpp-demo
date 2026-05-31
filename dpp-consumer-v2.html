@@ -1030,7 +1030,6 @@ function render(pid, passport, data, history, intOk, storedHash) {
     if (comp.declarationUrl)links += lRow('📋', 'AB Uygunluk Beyanı', comp.declarationUrl);
     if (comp.rohsUrl)       links += lRow('✅', 'RoHS Direktif Belgesi', comp.rohsUrl);
     if (comp.weeeUrl)       links += lRow('♻️', 'WEEE Direktif Belgesi', comp.weeeUrl);
-    links += lRow('🔗', 'Sepolia Etherscan\'de Görüntüle', ETHERSCAN + '/address/' + CONTRACT_ADDRESS);
     linkCard.innerHTML = `<div class="card-header"><div class="card-title">Uyumluluk Belgeleri ve Bağlantılar</div></div><div class="card-body">${links}</div>`;
     c.appendChild(linkCard);
   }
